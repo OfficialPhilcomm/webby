@@ -1,0 +1,55 @@
+require "tty-option"
+require_relative "server"
+
+module Webby
+  class Command
+    include TTY::Option
+
+    usage do
+      program "webby"
+      no_command
+
+      description "Static file hosting"
+    end
+
+    flag :help do
+      short "-h"
+      long "--help"
+      desc "Print this page"
+    end
+
+    option :port do
+      desc "Define the port used for the webserver"
+      short "-p"
+      long "--port port"
+
+      default 3000
+      convert :integer
+    end
+
+    flag :version do
+      short "-v"
+      long "--version"
+      desc "Print the version"
+    end
+
+    def run
+      if params[:help]
+        print help
+        exit
+      end
+
+      if params[:version]
+        puts Webby::VERSION
+        exit
+      end
+
+      if !params[:port]
+        puts "A given port must be an integer"
+        exit 1
+      end
+
+      Webby::Server.new(params[:port]).start
+    end
+  end
+end
