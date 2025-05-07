@@ -1,3 +1,6 @@
+# 1.0.3
+- Added emojis to logging
+
 # 1.0.2
 - Added the ability to pass the root directory to the `webby` command
 

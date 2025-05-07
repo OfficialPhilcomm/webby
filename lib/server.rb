@@ -3,6 +3,15 @@ require "io/console"
 
 module Webby
   class Logger
+    STATUS_CODE_EMOJIS = {
+      "200" => "✅",
+      "300" => "🔀",
+      "304" => "💠",
+      "400" => "⛔️",
+      "404" => "❓",
+      "500" => "💣"
+    }
+
     def initialize(app, logger = nil)
       @app = app
       @logger = logger
@@ -13,12 +22,20 @@ module Webby
       request = Rack::Request.new(env)
       status, _headers, _body = response = @app.call(env)
 
-      puts "\n#{request.request_method} #{request.path_info} -> #{status} (#{(clock_time - began_at).round(3)}s)"
+      puts "\n#{request.request_method} #{request.path_info} -> #{emoji(status)} #{status} (#{(clock_time - began_at).round(3)}s)"
 
       response
     end
 
     private
+
+    def emoji(status)
+      if STATUS_CODE_EMOJIS.has_key? status.to_s
+        STATUS_CODE_EMOJIS[status.to_s]
+      else
+        STATUS_CODE_EMOJIS[((status / 100) * 100).to_s]
+      end
+    end
 
     def clock_time
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
