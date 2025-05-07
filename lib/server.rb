@@ -22,7 +22,14 @@ module Webby
       request = Rack::Request.new(env)
       status, _headers, _body = response = @app.call(env)
 
-      puts "\n#{request.request_method} #{request.path_info} -> #{emoji(status)} #{status} (#{(clock_time - began_at).round(3)}s)"
+      puts [
+        "\n#{request.request_method}",
+        request.path_info,
+        "->",
+        emoji(status),
+        status,
+        "(#{(clock_time - began_at).round(3)}s)"
+      ].join(" ")
 
       response
     end
