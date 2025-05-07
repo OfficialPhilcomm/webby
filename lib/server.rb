@@ -26,36 +26,37 @@ module Webby
   end
 
   class Server
-    attr_reader :port
+    attr_reader :port, :root
 
-    def initialize(port)
+    def initialize(port, root)
       @port = port
+      @root = root
 
-      Thin::Logging.silent = true
+      Thin::Logging.silent = false
     end
 
     def start
       puts "Listening on 127.0.0.1:#{port}"
       thin_server = Thin::Server.new '127.0.0.1', port
-      thin_server.app = app
+      thin_server.app = app(root)
       thin_server.start
     end
 
     private
 
-    def app
+    def app(root)
       Rack::Builder.new do
         use Webby::Logger
         # use Rack::CommonLogger
 
         map "/" do
-          use Rack::Static, urls: {"/" => "index.html"}
+          use Rack::Static, urls: {"/" => File.join(root, "index.html")}
 
-          Dir["**/*.html"].each do |e|
+          Dir[File.join(root, "**/*.html")].each do |e|
             use Rack::Static, urls: {"/#{e.gsub(".html", "")}" => e}
           end
 
-          run Rack::Directory.new("./")
+          run Rack::Directory.new(root)
         end
       end
     end

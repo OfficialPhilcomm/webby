@@ -18,6 +18,14 @@ module Webby
       desc "Print this page"
     end
 
+    argument :root do
+      desc "The directory to run the webserver in"
+      optional
+
+      default Dir.pwd
+      convert :path
+    end
+
     option :port do
       desc "Define the port used for the webserver"
       short "-p"
@@ -49,7 +57,7 @@ module Webby
         exit 1
       end
 
-      Webby::Server.new(params[:port]).start
+      Webby::Server.new(params[:port], params[:root]).start
     end
   end
 end
