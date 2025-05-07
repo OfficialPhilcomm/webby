@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'webby'
-  s.version = '1.0.1'
+  s.version = '1.0.2'
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = ">= 3.1.0"
   s.summary = 'Static webserver'
