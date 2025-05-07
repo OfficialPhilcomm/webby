@@ -75,7 +75,6 @@ module Webby
     end
 
     def start
-      puts "Listening on 127.0.0.1:#{port}"
       thin_server = Thin::Server.new '127.0.0.1', port
       thin_server.app = app(root)
       thin_server.start
