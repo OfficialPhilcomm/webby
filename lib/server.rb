@@ -32,7 +32,7 @@ module Webby
       @port = port
       @root = root
 
-      Thin::Logging.silent = false
+      Thin::Logging.silent = true
     end
 
     def start
@@ -47,7 +47,6 @@ module Webby
     def app(root)
       Rack::Builder.new do
         use Webby::Logger
-        # use Rack::CommonLogger
 
         map "/" do
           use Rack::Static, urls: {"/" => File.join(root, "index.html")}
