@@ -1,5 +1,6 @@
 require "thin"
 require "io/console"
+require "pastel"
 
 module Webby
   class Logger
@@ -27,7 +28,7 @@ module Webby
         request.path_info,
         "->",
         emoji(status),
-        status,
+        colored_status(status.to_s),
         "(#{(clock_time - began_at).round(3)}s)"
       ].join(" ")
 
@@ -35,6 +36,20 @@ module Webby
     end
 
     private
+
+    def colored_status(status)
+      pastel = Pastel.new
+
+      if status.start_with? "2"
+        pastel.green(status)
+      elsif status.start_with? "3"
+        pastel.yellow(status)
+      elsif status.start_with? "4"
+        pastel.red(status)
+      else
+        pastel.blue(status)
+      end
+    end
 
     def emoji(status)
       if STATUS_CODE_EMOJIS.has_key? status.to_s
@@ -56,7 +71,7 @@ module Webby
       @port = port
       @root = root
 
-      Thin::Logging.silent = true
+      Thin::Logging.silent = false
     end
 
     def start
