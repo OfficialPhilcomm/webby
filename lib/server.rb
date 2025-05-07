@@ -24,7 +24,8 @@ module Webby
       status, _headers, _body = response = @app.call(env)
 
       puts [
-        "\n#{request.request_method}",
+        "\n#{time_string}",
+        "#{request.request_method}",
         request.path_info,
         "->",
         emoji(status),
@@ -36,6 +37,10 @@ module Webby
     end
 
     private
+
+    def time_string
+      Pastel.new.dark.white(Time.now.strftime("%H:%M:%S.%3N"))
+    end
 
     def colored_status(status)
       pastel = Pastel.new

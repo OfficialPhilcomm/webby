@@ -1,5 +1,7 @@
 # 1.0.3
 - Added emojis to logging
+- Added colors to response code
+- Added time in logs
 
 # 1.0.2
 - Added the ability to pass the root directory to the `webby` command
