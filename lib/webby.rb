@@ -1,7 +1,7 @@
 require_relative "command"
 
 module Webby
-  VERSION = "1.0.0"
+  VERSION = "1.0.1"
 
   def self.init
     cmd = Webby::Command.new
