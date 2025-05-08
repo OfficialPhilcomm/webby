@@ -47,6 +47,11 @@ module Webby
         exit
       end
 
+      if params.errors.any?
+        puts params.errors.summary
+        exit 1
+      end
+
       if params[:version]
         puts Webby::VERSION
         exit
@@ -54,6 +59,16 @@ module Webby
 
       if !params[:port]
         puts "A given port must be an integer"
+        exit 1
+      end
+
+      unless params[:root].exist?
+        puts "Root directory does not exist"
+        exit 1
+      end
+
+      unless params[:root].directory?
+        puts "Root is not a directory"
         exit 1
       end
 

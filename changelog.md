@@ -2,6 +2,7 @@
 - Added emojis to logging
 - Added colors to response code
 - Added time in logs
+- Added path validation
 
 # 1.0.2
 - Added the ability to pass the root directory to the `webby` command
