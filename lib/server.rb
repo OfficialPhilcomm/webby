@@ -1,74 +1,10 @@
 require "thin"
 require "io/console"
 require "pastel"
+require_relative "logger/thin"
+require_relative "logger/webby"
 
 module Webby
-  class Logger
-    STATUS_CODE_EMOJIS = {
-      "200" => "✅",
-      "300" => "🔀",
-      "304" => "💠",
-      "400" => "⛔️",
-      "404" => "❓",
-      "500" => "💣"
-    }
-
-    def initialize(app, logger = nil)
-      @app = app
-      @logger = logger
-    end
-
-    def call(env)
-      began_at = clock_time
-      request = Rack::Request.new(env)
-      status, _headers, _body = response = @app.call(env)
-
-      puts [
-        "\n#{time_string}",
-        "#{request.request_method}",
-        request.path_info,
-        "->",
-        emoji(status),
-        colored_status(status.to_s),
-        "(#{(clock_time - began_at).round(3)}s)"
-      ].join(" ")
-
-      response
-    end
-
-    private
-
-    def time_string
-      Pastel.new.dark.white(Time.now.strftime("%H:%M:%S.%3N"))
-    end
-
-    def colored_status(status)
-      pastel = Pastel.new
-
-      if status.start_with? "2"
-        pastel.green(status)
-      elsif status.start_with? "3"
-        pastel.yellow(status)
-      elsif status.start_with? "4"
-        pastel.red(status)
-      else
-        pastel.blue(status)
-      end
-    end
-
-    def emoji(status)
-      if STATUS_CODE_EMOJIS.has_key? status.to_s
-        STATUS_CODE_EMOJIS[status.to_s]
-      else
-        STATUS_CODE_EMOJIS[((status / 100) * 100).to_s]
-      end
-    end
-
-    def clock_time
-      Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    end
-  end
-
   class Server
     attr_reader :port, :root
 
@@ -76,7 +12,8 @@ module Webby
       @port = port
       @root = root
 
-      Thin::Logging.silent = false
+      Webby::Logger::Thin.level = 1
+      Thin::Logging.logger = Webby::Logger::Thin
     end
 
     def start
@@ -89,7 +26,7 @@ module Webby
 
     def app(root)
       Rack::Builder.new do
-        use Webby::Logger
+        use Webby::Logger::Webby
 
         map "/" do
           use Rack::Static, urls: {"/" => File.join(root, "index.html")}
